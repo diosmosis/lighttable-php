@@ -1,0 +1,10 @@
+{
+  "name": "PHP-repl",
+  "author": "diosmosis",
+  "version": "0.0.1",
+  "source": "https://github.com/diosmosis/php-repl",
+  "desc": "Smart PHP REPL built into LightTable.",
+  "dependencies": {
+  },
+  "behaviors": "php-repl.behaviors"
+}

@@ -1,0 +1,12 @@
+{
+  "name": "lt-php-repl",
+  "version": "0.1",
+  "main": "./index.js",
+  "dependencies": {
+    "angularjs": "*",
+    "angular-sanitize": "*",
+    "angular-animate": "*",
+    "angular-ui": "*",
+    "less.js": "~1.7.5"
+  }
+}

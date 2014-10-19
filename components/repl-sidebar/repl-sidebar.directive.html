@@ -1,0 +1,12 @@
+<h2>PHP REPL</h2>
+
+<div ng-repeat="command in replSidebar.commands">
+    <span class="terminal-start">&gt;</span>&nbsp;<span class="terminal-command">{{ command.command }}</span>
+    <div class="terminal-command-output">
+        {{ command.output }}
+    </div>
+</div>
+
+<span class="terminal-start">&gt;</span>&nbsp;
+<input class="terminal-command-input" type="text" ng-model="replSidebar.currentCommand"
+       ui-keypress="{'enter': 'replSidebar.executeCommand(replSidebar.currentCommand)'}">

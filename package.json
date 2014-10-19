@@ -1,0 +1,11 @@
+{
+  "name": "php-repl",
+  "description": "PHP REPL sidebar for LightTable.",
+  "author": "diosmosis",
+  "dependencies": {
+    "nw-gyp": "*",
+    "ffi": "*",
+    "ref": "*",
+    "ref-array": "*"
+  }
+}
