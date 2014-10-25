@@ -6,6 +6,8 @@
     "nw-gyp": "*",
     "ffi": "*",
     "ref": "*",
-    "ref-array": "*"
+    "ref-array": "*",
+    "ref-struct": "*",
+    "ref-union": "*"
   }
 }

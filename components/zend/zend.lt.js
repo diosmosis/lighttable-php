@@ -4,17 +4,9 @@ var lt = window.lt,
 
 ltshunt.ns("lt.plugins.php-repl");
 
-var zendTemplate = ltshunt.object.type('zend', {
-    ':tags': [':zend-engine', ':php-engine'],
-    ':path': "",
-    ':label': 'zend',
-    ':active': null,
-    ':init': function () {
-        // TODO: fill out or leave blank?
-    }
-});
-
-zendTemplate.new();
+// TODO: would be better if this was automatic (ie, go through angularjs injected objects and automatatically create)
+//       tags can be specified via a $ltTags member (like $inject)
+ltshunt.object.forAngularService('Zend', [':zend-engine', ':php-engine']);
 
 ltshunt.behavior.new('set-php-location', {
     desc: 'PHP-REPL: Set PHP Location',
@@ -27,8 +19,6 @@ ltshunt.behavior.new('set-php-location', {
         }
     ],
     reaction: function (self, path) {
-        ltshunt.angular.invoke(function (Zend) {
-            Zend.setPathToPhp(path);
-        });
+        ltshunt.object.set(self, 'path-to-php', path);
     }
 });
