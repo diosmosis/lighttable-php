@@ -65,6 +65,7 @@ function ZendService(ZendLt) {
         executeResult = service.phpLibrary.zend_eval_stringl(getBufferCommand, getBufferCommand.length, bufferContents.ref(), "lighttable command (get result)");
 
         // TODO: switch to async functions
+        // TODO: surround execution of commands in zend_try, otherwise fatal errors will exit;
 
         callback(null, bufferContents.value.str.val);
     }
