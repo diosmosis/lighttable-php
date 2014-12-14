@@ -3,11 +3,12 @@
   "description": "PHP REPL sidebar for LightTable.",
   "author": "diosmosis",
   "dependencies": {
-    "nw-gyp": "*",
-    "ffi": "*",
-    "ref": "*",
-    "ref-array": "*",
-    "ref-struct": "*",
-    "ref-union": "*"
+    "nw-gyp": "latest",
+    "ffi": "latest",
+    "ref": "latest",
+    "ref-array": "latest",
+    "ref-struct": "latest",
+    "ref-union": "latest",
+    "node-ffi-php-bindings": "diosmosis/node-ffi-php-bindings"
   }
 }

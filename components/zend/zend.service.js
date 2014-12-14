@@ -6,11 +6,6 @@ var angular = window.angular,
     Struct = require('ref-struct'),
     Union = require('ref-union');
 
-var types = {
-    charPtr: ref.refType('char'),
-    stringArray: ArrayType('string')
-};
-
 angular.module('phpRepl').service('Zend', ZendService);
 
 ZendService.$inject = ['ZendLt'];
@@ -34,69 +29,52 @@ function ZendService(ZendLt) {
 
         command = "ob_start();" + command + ";";
 
-        var zendObjectValue = Struct({
-            handle: 'uint',
-            handlers: 'pointer'
-        });
+        service.phpLibrary.zend_eval_stringl(ref.allocCString(command), command.length, null, ref.allocCString("lighttable command"));
 
-        // TODO: would be great if this could be generated from php source code.
-        var zvalValue = Union({
-            lval: 'long',
-            dval: 'double',
-            str: Struct({
-                val: 'string',
-                len: 'int'
-            }),
-            ht: 'pointer', // TODO should be HashTable pointer
-            obj: zendObjectValue
-        });
-
-        var zvalStruct = Struct({
-            value: zvalValue,
-            refcount: 'uint',
-            type: 'uchar',
-            is_ref: 'uchar'
-        });
-
-        var executeResult = service.phpLibrary.zend_eval_stringl(command, command.length, null, "lighttable command");
-
-        var bufferContents = new zvalStruct();
+        var bufferContents = new service.phpMod.zval();
         var getBufferCommand = "ob_get_contents();";
-        executeResult = service.phpLibrary.zend_eval_stringl(getBufferCommand, getBufferCommand.length, bufferContents.ref(), "lighttable command (get result)");
+        service.phpLibrary.zend_eval_stringl(ref.allocCString(getBufferCommand), getBufferCommand.length, bufferContents.ref(), ref.allocCString("lighttable command (get result)"));
 
         // TODO: switch to async functions
         // TODO: surround execution of commands in zend_try, otherwise fatal errors will exit;
 
-        callback(null, bufferContents.value.str.val);
+        var output = "";
+        if (!bufferContents.value.str.val.isNull()) {
+            output = bufferContents.value.str.val.readCString();
+        }
+
+        callback(null, output);
     }
 
     function changePhpPath(pathToPhp) {
         cleanUpZend();
 
-        // TODO: support more versions of php & let user know when php version is not suppoted
-        service.phpLibrary = ffi.Library(pathToPhp, {
-            get_zend_version: ['string', []],
-            php_embed_init: ['int', ['int', types.stringArray]],
-            php_embed_shutdown: ['void', []],
-            zend_eval_stringl: ['int', ['string', 'int', 'pointer', 'string']]
-        });
+        // TODO: support more versions of php & let user know when php version is not supported
+        service.phpMod = require('node-ffi-php-bindings/lib/5.6');
+        service.phpMod.loadDependentSymbols();
+        service.phpMod.loadAllBindings();
+
+        service.phpLibrary = service.phpMod(pathToPhp);
 
         // initialize php for embedding
         startupZend();
 
         // test our embedded connection by calling get_zend_version
-        var zendVersion = service.phpLibrary.get_zend_version();
+        var zendVersion = service.phpLibrary.get_zend_version().readCString();
         console.log("Zend version: " + zendVersion);
     }
 
     function startupZend() {
-        service.phpLibrary.php_embed_init(0, []);
+        service.phpLibrary.php_embed_init(0, null);
     }
 
     function cleanUpZend() {
         if (service.phpLibrary) {
             service.phpLibrary.php_embed_shutdown();
-            delete service.phpLibrary; // TODO: doesn't actually call dlclose()
+            service.phpLibrary.close();
+
+            delete service.phpLibrary;
+            delete service.phpMod;
         }
     }
 }
